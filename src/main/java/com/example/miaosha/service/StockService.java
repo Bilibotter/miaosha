@@ -35,9 +35,9 @@ public interface StockService {
      * 新增数据
      *
      * @param stock 实例对象
-     * @return 实例对象
+     * @return
      */
-    Stock insert(Stock stock);
+    int insert(Stock stock);
 
     /**
      * 修改数据
@@ -45,7 +45,7 @@ public interface StockService {
      * @param stock 实例对象
      * @return 实例对象
      */
-    Stock update(Stock stock);
+    int update(Stock stock);
 
     /**
      * 通过主键删除数据
@@ -54,5 +54,19 @@ public interface StockService {
      * @return 是否成功
      */
     boolean deleteById(Integer id);
+
+    /**
+     * 使用乐观锁更新库存
+     *
+     * @param stock 实例对象
+     * @return 影响的行数
+     */
+    int addStackWithOptimisticLock(Stock stock);
+
+    List<Stock> getHotStocks(int limit);
+
+    List<Stock> getInitHotStocks(int limit);
+
+    boolean hasHistory();
 
 }

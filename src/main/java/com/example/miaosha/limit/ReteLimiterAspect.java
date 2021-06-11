@@ -1,4 +1,4 @@
-package com.example.miaosha.redis;
+package com.example.miaosha.limit;
 
 import com.google.common.util.concurrent.RateLimiter;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -25,7 +25,7 @@ public class ReteLimiterAspect {
     private RateLimiter limiter;
     private Logger logger = LoggerFactory.getLogger(ReteLimiterAspect.class);
 
-    @Pointcut("@annotation(com.example.miaosha.redis.Limit)")
+    @Pointcut("@annotation(com.example.miaosha.limit.Limit)")
     public void service() {}
 
     @Around("service()")

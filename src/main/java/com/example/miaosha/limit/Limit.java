@@ -1,4 +1,4 @@
-package com.example.miaosha.redis;
+package com.example.miaosha.limit;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

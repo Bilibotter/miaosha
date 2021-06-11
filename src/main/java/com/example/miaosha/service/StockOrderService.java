@@ -45,7 +45,7 @@ public interface StockOrderService {
      * @param stockOrder 实例对象
      * @return 实例对象
      */
-    StockOrder update(StockOrder stockOrder);
+    int update(StockOrder stockOrder);
 
     /**
      * 通过主键删除数据
@@ -54,5 +54,13 @@ public interface StockOrderService {
      * @return 是否成功
      */
     boolean deleteById(Integer id);
+
+    int delOrderDBBefore();
+
+    int createNewOrderWithOptimisticLock(int sid) throws Exception;
+
+    int CreateNewOrderWithOptimisticLockAndRedis(int sid)throws  Exception;
+
+    int CreateNewOrderWithOptimisticLockAndRedisLimit(int sid) throws Exception;
 
 }

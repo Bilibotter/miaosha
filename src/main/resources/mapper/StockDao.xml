@@ -91,4 +91,18 @@
         and version = #{version}
     </update>
 
+    <select id="selectMaxSoldHotStockHasRemain" resultMap="BaseResultMap">
+        select id, name, sold, remain, version from miaosha.stock
+        where sold > 0 order by sold desc limit #{limit}
+    </select>
+
+    <select id="selectMaxRemainStock" resultMap="BaseResultMap">
+        select id, name, sold, remain, version from miaosha.stock
+        order by remain desc limit #{limit};
+    </select>
+
+    <select id="hasHistory" resultType="Integer">
+        select version from miaosha.stock where version > 0 limit 1
+    </select>
+
 </mapper>

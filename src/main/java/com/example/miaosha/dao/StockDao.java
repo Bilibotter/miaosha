@@ -73,4 +73,26 @@ public interface StockDao {
      */
     int addStackWithOptimisticLock(Stock stock);
 
+    /**
+     * 在有历史记录的情况下返回预热数据
+     *
+     * @param limit 热点数据的数据量
+     * @return 仍有库存的热点数据
+     */
+    List<Stock> selectMaxSoldHotStockHasRemain(int limit);
+
+    /**
+     * 将库存最多的商品作为热点数据返回
+     * 适用于无历史记录的情况
+     *
+     * @param limit 热点数据的数据量
+     * @return 库存最多的数据
+     */
+    List<Stock> selectMaxRemainStock(int limit);
+
+    /**
+     * 查询是否有一条版本号不为0的记录
+     */
+    Integer hasHistory();
+
 }

@@ -49,9 +49,8 @@ public class StockServiceImpl implements StockService {
      * @return 实例对象
      */
     @Override
-    public Stock insert(Stock stock) {
-        this.stockDao.insert(stock);
-        return stock;
+    public int insert(Stock stock) {
+        return this.stockDao.insert(stock);
     }
 
     /**
@@ -61,9 +60,8 @@ public class StockServiceImpl implements StockService {
      * @return 实例对象
      */
     @Override
-    public Stock update(Stock stock) {
-        this.stockDao.update(stock);
-        return this.queryById(stock.getId());
+    public int update(Stock stock) {
+        return this.stockDao.update(stock);
     }
 
     /**
@@ -75,5 +73,25 @@ public class StockServiceImpl implements StockService {
     @Override
     public boolean deleteById(Integer id) {
         return this.stockDao.deleteById(id) > 0;
+    }
+
+    @Override
+    public int addStackWithOptimisticLock(Stock stock) {
+        return stockDao.addStackWithOptimisticLock(stock);
+    }
+
+    @Override
+    public List<Stock> getHotStocks(int limit) {
+        return stockDao.selectMaxSoldHotStockHasRemain(limit);
+    }
+
+    @Override
+    public List<Stock> getInitHotStocks(int limit) {
+        return stockDao.selectMaxRemainStock(limit);
+    }
+
+    @Override
+    public boolean hasHistory() {
+        return stockDao.hasHistory() != null;
     }
 }

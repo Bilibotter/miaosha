@@ -1,7 +1,6 @@
 package com.example.miaosha.controller;
 
 import com.example.miaosha.entity.Stock;
-import com.example.miaosha.redis.Limit;
 import com.example.miaosha.service.StockService;
 import org.springframework.web.bind.annotation.*;
 

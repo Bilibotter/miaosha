@@ -62,4 +62,14 @@ public class Stock implements Serializable {
         this.version = version;
     }
 
+    @Override
+    public String toString() {
+        return "Stock{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", remain=" + remain +
+                ", sold=" + sold +
+                ", version=" + version +
+                '}';
+    }
 }
