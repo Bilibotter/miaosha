@@ -5,12 +5,14 @@ import com.example.miaosha.service.StockService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.List;
 
+@Profile("!test")
 @Component
 public class RedisPreHeat implements ApplicationRunner {
     @Resource

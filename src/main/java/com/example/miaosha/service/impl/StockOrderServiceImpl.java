@@ -6,7 +6,10 @@ import com.example.miaosha.dao.StockOrderDao;
 import com.example.miaosha.redis.StockPrefix;
 import com.example.miaosha.redis.RedisUtils;
 import com.example.miaosha.service.StockOrderService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -29,6 +32,15 @@ public class StockOrderServiceImpl implements StockOrderService {
 
     @Resource
     private StringRedisTemplate template;
+
+    @Value("${spring.kafka.topic-name}")
+    private String topic;
+
+    @Autowired
+    private KafkaTemplate kafkaTemplate;
+
+    @Autowired
+    private RedisUtils utils;
 
     /**
      * 通过ID查询单条数据
@@ -123,7 +135,7 @@ public class StockOrderServiceImpl implements StockOrderService {
         stock.setRemain(remain);
         stock.setSold(Integer.valueOf(template.opsForValue().get(StockPrefix.SOLD+sid)));
         stock.setVersion(Integer.valueOf(template.opsForValue().get(StockPrefix.VERSION+sid)));
-        stock.setName("DefaultName");
+        stock.setName("Default");
         return stock;
     }
 
@@ -148,7 +160,7 @@ public class StockOrderServiceImpl implements StockOrderService {
         if (result == 0) {
             throw new RuntimeException("Invalid stock info, because stock has changed during order!");
         }
-        RedisUtils.updateCache(stock.getId());
+        utils.updateCache(stock.getId());
         return result;
     }
 
@@ -157,21 +169,31 @@ public class StockOrderServiceImpl implements StockOrderService {
     public int CreateNewOrderWithOptimisticLockAndRedisLimit(int sid) throws Exception {
         Stock stock = checkRemainFromRedis(sid);
         saleStockWithOptimisticLockRedis(stock);
-        return creatOrder(stock);
+        return createOrder(stock);
+    }
+
+    public void CreateNewOrderWithOptimisticLockAndRedisLimitKafka(int sid) throws Exception {
+        Stock stock = checkRemainFromRedis(sid);
+        kafkaTemplate.send(topic, stock);
+    }
+
+    public int consumerFromKafka(Stock stock) throws Exception {
+        saleStockWithOptimisticLockRedis(stock);
+        return createOrder(stock);
     }
     
     public int createWrongOrder(int sid) {
         Stock stock = checkRemain(sid);
         saleStock(stock);
-        return creatOrder(stock);
+        return createOrder(stock);
     }
 
-    private int creatOrder(Stock stock) throws RuntimeException {
+    private int createOrder(Stock stock) throws RuntimeException {
         StockOrder order = new StockOrder();
         order.setCreatTime(new Date());
         order.setSid(stock.getId());
         order.setName(stock.getName());
-        int result = stockServiceImpl.insert(stock);
+        int result = stockOrderDao.insert(order);
         if (result == 0) {
             throw new RuntimeException("Fail to create order");
         }
