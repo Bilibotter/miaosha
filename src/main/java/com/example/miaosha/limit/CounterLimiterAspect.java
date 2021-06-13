@@ -7,25 +7,19 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
-import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * @Author: YHM
- * @Date: 2021/6/9 20:10
- */
 @Aspect
 @Component
-public class ReteLimiterAspect {
-    private ConcurrentHashMap<String, RateLimiter> RateLimiters = new ConcurrentHashMap<>();
-    private RateLimiter limiter;
-    private Logger logger = LoggerFactory.getLogger(ReteLimiterAspect.class);
+public class CounterLimiterAspect {
 
-    @Pointcut("@annotation(com.example.miaosha.limit.Limit)")
+    @Autowired
+    private LimitStream limiter;
+
+    @Pointcut("@annotation(com.example.miaosha.limit.Limited)")
     public void service() {}
 
     @Around("service()")
@@ -34,15 +28,9 @@ public class ReteLimiterAspect {
         MethodSignature methodSignature = (MethodSignature) signature;
         Object target = point.getTarget();
         Method method = target.getClass().getMethod(methodSignature.getName(), methodSignature.getParameterTypes());
-        Limit limit = method.getAnnotation(Limit.class);
-        double limitNum = limit.limitNum();
-        String name = methodSignature.getName();
-        if (!RateLimiters.containsKey(name)) {
-            RateLimiters.put(name, RateLimiter.create(limitNum));
-        }
-        limiter = RateLimiters.get(name);
-        if (limiter.tryAcquire()) {
-            logger.info(method+" execute success!");
+        Limited limited = method.getAnnotation(Limited.class);
+        double limitNum = limited.limitNum();
+        if (limiter.limit()) {
             return point.proceed();
         }
         else {

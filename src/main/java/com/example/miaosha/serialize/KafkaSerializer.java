@@ -10,7 +10,7 @@ import javax.annotation.Resource;
 import java.util.Map;
 
 public class KafkaSerializer implements Serializer<Stock> {
-    private static FSTConfiguration configuration;
+    private final static FSTConfiguration configuration;
 
     static {
         configuration = FSTConfiguration.createDefaultConfiguration();
